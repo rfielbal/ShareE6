@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% block title %}Fichiers par utilisateur · ShareE6{% endblock %}
+{% block body %}
+<a class="back-link" href="{{ path('app_liste_fichiers') }}">Retour aux fichiers</a>
+<div class="page-heading"><div><p class="eyebrow">Administration des fichiers</p><h1>Fichiers par utilisateur</h1><p class="muted">Identifiez le propriétaire de chaque document.</p></div><a class="btn" href="{{ path('app_ajout_fichier') }}">Déposer un fichier</a></div>
+{% for user in users %}
+<section class="card"><h2>{{ user.prenom }} {{ user.nom }}</h2><p class="muted">{{ user.email }}</p>
+    {% include 'fichier/_tableau.html.twig' with {fichiers: user.fichiers, afficherProprietaire: false} %}
+</section>
+{% else %}<p class="muted">Aucun utilisateur enregistré.</p>{% endfor %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Catégories · ShareE6{% endblock %}
+{% block body %}
+<div class="page-heading">
+    <div><p class="eyebrow">Classement des fichiers</p><h1>Catégories</h1><p class="muted">Retrouvez les catégories et leurs sous-catégories.</p></div>
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="actions">
+            <a class="btn" href="{{ path('app_ajout_categorie') }}">Ajouter une catégorie</a>
+            {% if categories|length %}<a class="btn secondary" href="{{ path('app_ajout_scategorie') }}">Ajouter une sous-catégorie</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% for categorie in categories %}
+<section class="card category-card">
+    <div class="page-heading">
+        <div><h2>{{ categorie.libelle }}</h2><p class="muted mb-0">{{ categorie.scategories|length }} sous-catégorie{{ categorie.scategories|length > 1 ? 's' : '' }}</p></div>
+        {% if is_granted('ROLE_ADMIN') %}<div class="actions">
+            <a class="btn secondary" href="{{ path('app_modifier_categorie', {id: categorie.id}) }}">Modifier<span class="visually-hidden"> {{ categorie.libelle }}</span></a>
+            <a class="btn danger" href="{{ path('app_supprimer_categorie', {id: categorie.id}) }}">Supprimer<span class="visually-hidden"> {{ categorie.libelle }}</span></a>
+        </div>{% endif %}
+    </div>
+    {% if categorie.scategories|length %}
+    <div class="table-responsive"><table class="table table-hover mb-0">
+        <thead><tr><th scope="col">Numéro</th><th scope="col">Sous-catégorie</th>{% if is_granted('ROLE_ADMIN') %}<th scope="col">Actions</th>{% endif %}</tr></thead>
+        <tbody>{% for scategorie in categorie.scategories|sort((a, b) => a.numero <=> b.numero) %}
+        <tr><td>{{ scategorie.numero }}</td><td>{{ scategorie.libelle }}</td>
+            {% if is_granted('ROLE_ADMIN') %}<td><div class="actions">
+                <a class="btn secondary" href="{{ path('app_modifier_scategorie', {id: scategorie.id}) }}">Modifier<span class="visually-hidden"> {{ scategorie.libelle }}</span></a>
+                <a class="btn danger" href="{{ path('app_supprimer_scategorie', {id: scategorie.id}) }}">Supprimer<span class="visually-hidden"> {{ scategorie.libelle }}</span></a>
+            </div></td>{% endif %}
+        </tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}<p class="muted mb-0">Cette catégorie ne contient pas encore de sous-catégorie.</p>{% endif %}
+</section>
+{% else %}<div class="card empty-state"><h2>Aucune catégorie pour le moment</h2><p class="muted mb-0">{% if is_granted('ROLE_ADMIN') %}Créez une première catégorie pour commencer à classer les fichiers.{% else %}L’administrateur doit créer le classement avant le premier dépôt.{% endif %}</p></div>{% endfor %}
+{% endblock %}

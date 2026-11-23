@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Tests\Support\TestDatabase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-/** Tests du modèle sur la base MariaDB dédiée dbSymfonyType_test. */
+/** Tests du modèle sur la base MariaDB dédiée share_e6_test. */
 final class ModeleDonneesTest extends KernelTestCase
 {
     private EntityManagerInterface $em;

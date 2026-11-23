@@ -13,3 +13,11 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+/uploads/fichiers/*
+!/uploads/fichiers/.gitkeep
+.DS_Store
+/.playwright-cli/
+/output/playwright/
+
+*.docx

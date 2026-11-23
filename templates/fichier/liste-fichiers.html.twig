@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ titre }} · ShareE6{% endblock %}
+{% block body %}
+<div class="page-heading"><div><p class="eyebrow">Documents</p><h1>{{ titre }}</h1><p class="muted">{{ fichiers|length }} fichier{{ fichiers|length > 1 ? 's' : '' }} disponible{{ fichiers|length > 1 ? 's' : '' }}.</p></div>
+    <div class="actions"><a class="btn" href="{{ path('app_ajout_fichier') }}">Déposer un fichier</a>{% if is_granted('ROLE_ADMIN') %}<a class="btn secondary" href="{{ path('app_fichiers_par_utilisateur') }}">Voir par utilisateur</a>{% endif %}</div>
+</div>
+<section class="card">{% include 'fichier/_tableau.html.twig' with {afficherProprietaire: is_granted('ROLE_ADMIN')} %}</section>
+{% endblock %}

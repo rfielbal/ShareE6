@@ -92,6 +92,10 @@ final class AdminController extends AbstractController
             $this->addFlash('error', 'Tu ne peux pas supprimer le compte avec lequel tu es connecté.');
             return $this->redirectToRoute('admin_users');
         }
+        if (!$user->getFichiers()->isEmpty()) {
+            $this->addFlash('error', 'Supprimez les fichiers de cet utilisateur avant de supprimer son compte. Vous pouvez aussi suspendre le compte.');
+            return $this->redirectToRoute('admin_users');
+        }
         $entityManager->remove($user);
         $entityManager->flush();
         $this->addFlash('success', 'Le compte et ses historiques ont été supprimés.');

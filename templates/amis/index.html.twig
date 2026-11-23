@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes amis — Gestion des accès{% endblock %}
+
+{% block body %}
+    <h1>Mes amis</h1>
+    <section class="card" aria-labelledby="ajouter-ami">
+        <h2 id="ajouter-ami">Ajouter un ami</h2>
+        <p>Envoyez une invitation avec son adresse email. Vous deviendrez amis lorsqu’il l’acceptera.</p>
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            <button type="submit">Envoyer l’invitation</button>
+        {{ form_end(form) }}
+    </section>
+
+    <section class="card" aria-labelledby="demandes-recues">
+        <h2 id="demandes-recues">Demandes reçues ({{ user.usersDemande|length }})</h2>
+        {% for ami in user.usersDemande %}
+            <div class="actions">
+                <p>{{ ami.prenom }} {{ ami.nom }} <span class="muted">({{ ami.email }})</span></p>
+                {% if ami.estActif %}
+                    {% include 'amis/_action.html.twig' with {ami: ami, action: 'accepter', label: 'Accepter'} only %}
+                {% else %}
+                    <span class="muted">Compte suspendu</span>
+                {% endif %}
+                {% include 'amis/_action.html.twig' with {ami: ami, action: 'refuser', label: 'Refuser'} only %}
+            </div>
+        {% else %}
+            <p class="muted">Aucune demande reçue.</p>
+        {% endfor %}
+    </section>
+
+    <section class="card" aria-labelledby="liste-amis">
+        <h2 id="liste-amis">Liste d’amis ({{ user.accepter|length }})</h2>
+        {% for ami in user.accepter|sort((a, b) => (a.nom ~ a.prenom) <=> (b.nom ~ b.prenom)) %}
+            <div class="actions">
+                <p>{{ ami.prenom }} {{ ami.nom }} <span class="muted">({{ ami.email }}){% if not ami.estActif %} — Compte suspendu{% endif %}</span></p>
+                {% include 'amis/_action.html.twig' with {ami: ami, action: 'supprimer', label: 'Retirer cet ami'} only %}
+            </div>
+        {% else %}
+            <p class="muted">Vous n’avez pas encore d’amis. Envoyez votre première invitation ci-dessus.</p>
+        {% endfor %}
+    </section>
+
+    <section class="card" aria-labelledby="demandes-envoyees">
+        <h2 id="demandes-envoyees">Invitations envoyées ({{ user.demander|length }})</h2>
+        {% for ami in user.demander %}
+            <div class="actions">
+                <p>{{ ami.prenom }} {{ ami.nom }} <span class="muted">({{ ami.email }}) — En attente</span></p>
+                {% include 'amis/_action.html.twig' with {ami: ami, action: 'annuler', label: 'Annuler l’invitation'} only %}
+            </div>
+        {% else %}
+            <p class="muted">Aucune invitation en attente.</p>
+        {% endfor %}
+    </section>
+{% endblock %}

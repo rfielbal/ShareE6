@@ -1,8 +1,0 @@
-{% extends 'base.html.twig' %}
-{% block title %}Déposer un fichier · ShareE6{% endblock %}
-{% block body %}
-<a class="back-link" href="{{ path('app_liste_fichiers') }}">Retour aux fichiers</a>
-<section class="card form-panel"><h1>Déposer un fichier</h1><p class="muted">Ajoutez un document et choisissez son classement.</p>
-    {% include 'fichier/_depot.html.twig' %}
-</section>
-{% endblock %}

@@ -1,6 +1,3 @@
-parameters:
-    file_directory: '%kernel.project_dir%/var/test/uploads/fichiers'
-
 services:
     test.pwned_password_http_client:
         class: Symfony\Component\HttpClient\MockHttpClient

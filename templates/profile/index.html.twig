@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mon profil · ShareE6{% endblock %}
+{% block title %}Mon profil · Gestion des accès{% endblock %}
 {% block body %}
 <h1>Mon profil</h1>
 <section class="card">
@@ -8,15 +8,7 @@
     <p class="muted">Inscription le {{ app.user.dateInscription|date('d/m/Y') }} · {{ app.user.isActif ? 'Compte actif' : 'Compte suspendu' }}</p>
     <p><a href="{{ path('app_profile_edit', {id: app.user.id}) }}">Modifier mes coordonnées</a></p>
 </section>
-<section class="card">
-    <h2>Mes fichiers</h2>
-    {% include 'fichier/_tableau.html.twig' with {fichiers: app.user.fichiers, afficherProprietaire: false} %}
-</section>
-<section class="card form-panel">
-    <h2>Déposer un fichier dans mon espace</h2>
-    {% include 'fichier/_depot.html.twig' with {form: fichierForm} %}
-</section>
-<section class="card form-panel">
+<section class="card" style="max-width:650px">
     <h2>Modifier le mot de passe</h2>
     <p class="muted">Un ancien mot de passe ne pourra plus être réutilisé. Le mot de passe actuel est demandé pour confirmer le changement.</p>
     {{ form_start(changePasswordForm) }}

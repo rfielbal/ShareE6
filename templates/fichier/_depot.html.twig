@@ -3,7 +3,7 @@
     {{ form_start(form) }}
         {{ form_errors(form) }}
         {{ form_row(form.fichier) }}
-        <p class="muted">PDF, PNG ou JPG. Taille maximale : 200 ko.</p>
+        <p class="muted">PDF, PNG ou JPG, jusqu’à 2 Mo.</p>
         {% if form.user is defined %}{{ form_row(form.user) }}{% endif %}
         {% include 'fichier/_classement.html.twig' %}
         <div class="actions">{{ form_widget(form.envoyer) }}</div>

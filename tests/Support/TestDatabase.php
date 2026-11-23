@@ -22,16 +22,16 @@ final class TestDatabase
         // Refuser la configuration dangereuse avant même la première requête.
         $params = $this->connection->getParams();
         if ($this->environment !== 'test'
-            || ($params['dbname'] ?? null) !== 'dbSymfonyType_test'
+            || ($params['dbname'] ?? null) !== 'share_e6_test'
             || ($params['driver'] ?? null) !== 'pdo_mysql') {
-            throw new \RuntimeException('Nettoyage refusé : environnement test, pilote pdo_mysql et base dbSymfonyType_test obligatoires.');
+            throw new \RuntimeException('Nettoyage refusé : environnement test, pilote pdo_mysql et base share_e6_test obligatoires.');
         }
 
         // Vérifier aussi la base réellement sélectionnée et le moteur du serveur.
         $actual = $this->connection->fetchAssociative('SELECT DATABASE() AS db, VERSION() AS version');
-        if (!$actual || $actual['db'] !== 'dbSymfonyType_test'
+        if (!$actual || $actual['db'] !== 'share_e6_test'
             || stripos($actual['version'], 'MariaDB') === false) {
-            throw new \RuntimeException('Nettoyage refusé : la connexion réelle doit utiliser MariaDB / dbSymfonyType_test.');
+            throw new \RuntimeException('Nettoyage refusé : la connexion réelle doit utiliser MariaDB / share_e6_test.');
         }
     }
 
@@ -43,6 +43,10 @@ final class TestDatabase
         // Enfants avant parent : les contraintes restent actives.
         // Pas de DROP, de TRUNCATE ni de modification des migrations.
         $this->connection->transactional(function (Connection $connection): void {
+            $connection->executeStatement('DELETE FROM `fichier_scategorie`');
+            $connection->executeStatement('DELETE FROM `fichier`');
+            $connection->executeStatement('DELETE FROM `scategorie`');
+            $connection->executeStatement('DELETE FROM `categorie`');
             $connection->executeStatement('DELETE FROM `historique_connexion`');
             $connection->executeStatement('DELETE FROM `historique_mdp`');
             $connection->executeStatement('DELETE FROM `user`');

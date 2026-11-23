@@ -25,10 +25,10 @@ class FichierType extends ClassementFichierType
                 'constraints' => [
                     new NotBlank(message: 'Sélectionnez un fichier.'),
                     new File(
-                        maxSize: '200k',
+                        maxSize: '2M',
                         extensions: ['pdf', 'png', 'jpg', 'jpeg'],
                         extensionsMessage: 'Choisissez un fichier PDF, PNG ou JPG dont le contenu correspond à son extension.',
-                        maxSizeMessage: 'Le fichier dépasse la taille maximale de 200 ko.',
+                        maxSizeMessage: 'Le fichier dépasse la limite de 2 Mo.',
                     ),
                 ],
             ])

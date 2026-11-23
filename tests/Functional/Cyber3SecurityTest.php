@@ -18,7 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * Cyber 3, scénarios 1-6 et 9-15. Les scénarios 7-8 sont dans ProfileSecurityTest.
- * Chaque situation part de ses propres données dans dbSymfonyType_test (MariaDB).
+ * Chaque situation part de ses propres données dans share_e6_test (MariaDB).
  * Les tests Cyber 2 de SecurityTest restent exécutés avec cette suite.
  */
 final class Cyber3SecurityTest extends WebTestCase

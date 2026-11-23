@@ -31,12 +31,12 @@ final class TestDatabaseTest extends TestCase
     // Chaque jeu de données représente une erreur de configuration indépendante.
     public static function unsafeConfigurations(): iterable
     {
-        yield 'environnement développement' => ['dev', ['driver' => 'pdo_mysql', 'dbname' => 'dbSymfonyType_test']];
-        yield 'environnement production' => ['prod', ['driver' => 'pdo_mysql', 'dbname' => 'dbSymfonyType_test']];
-        yield 'base de développement' => ['test', ['driver' => 'pdo_mysql', 'dbname' => 'dbSymfonyType']];
-        yield 'suffixe ajouté deux fois' => ['test', ['driver' => 'pdo_mysql', 'dbname' => 'dbSymfonyType_test_test']];
+        yield 'environnement développement' => ['dev', ['driver' => 'pdo_mysql', 'dbname' => 'share_e6_test']];
+        yield 'environnement production' => ['prod', ['driver' => 'pdo_mysql', 'dbname' => 'share_e6_test']];
+        yield 'base de développement' => ['test', ['driver' => 'pdo_mysql', 'dbname' => 'share_e6']];
+        yield 'suffixe ajouté deux fois' => ['test', ['driver' => 'pdo_mysql', 'dbname' => 'share_e6_test_test']];
         yield 'nom de base absent' => ['test', ['driver' => 'pdo_mysql']];
-        yield 'pilote non autorisé' => ['test', ['driver' => 'pdo_pgsql', 'dbname' => 'dbSymfonyType_test']];
+        yield 'pilote non autorisé' => ['test', ['driver' => 'pdo_pgsql', 'dbname' => 'share_e6_test']];
     }
 
     #[DataProvider('unsafeServers')]
@@ -44,7 +44,7 @@ final class TestDatabaseTest extends TestCase
     public function testConnexionReelleInattendueRefuseeAvantTouteEcriture(array|false $actual): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->method('getParams')->willReturn(['driver' => 'pdo_mysql', 'dbname' => 'dbSymfonyType_test']);
+        $connection->method('getParams')->willReturn(['driver' => 'pdo_mysql', 'dbname' => 'share_e6_test']);
         $connection->expects(self::once())->method('fetchAssociative')
             ->with('SELECT DATABASE() AS db, VERSION() AS version')->willReturn($actual);
         $connection->expects(self::never())->method('executeStatement');
@@ -58,8 +58,8 @@ final class TestDatabaseTest extends TestCase
     // Simuler les résultats de SELECT DATABASE(), VERSION() ; aucune vraie base n’est utilisée ici.
     public static function unsafeServers(): iterable
     {
-        yield 'base réelle différente' => [['db' => 'dbSymfonyType', 'version' => '11.4.5-MariaDB']];
-        yield 'serveur MySQL au lieu de MariaDB' => [['db' => 'dbSymfonyType_test', 'version' => '8.4.0']];
+        yield 'base réelle différente' => [['db' => 'share_e6', 'version' => '11.4.5-MariaDB']];
+        yield 'serveur MySQL au lieu de MariaDB' => [['db' => 'share_e6_test', 'version' => '8.4.0']];
         yield 'réponse absente' => [false];
     }
 }

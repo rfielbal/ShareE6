@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/** Tests sur la base MariaDB dédiée dbSymfonyType_test, déjà migrée. */
+/** Tests sur la base MariaDB dédiée share_e6_test, déjà migrée. */
 final class SecurityTest extends WebTestCase
 {
     private KernelBrowser $client;

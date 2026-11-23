@@ -25,7 +25,7 @@ jobs:
       mariadb:
         image: mariadb:11.4
         env:
-          MARIADB_DATABASE: dbSymfonyType_test
+          MARIADB_DATABASE: share_e6_test
           # Accès d'administration limité au conteneur jetable. Aucun compte
           # root distant : le compte applicatif est créé avec un secret aléatoire.
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
@@ -64,11 +64,11 @@ jobs:
           echo "::add-mask::$test_db_password"
           docker exec -i "$MARIADB_CONTAINER" mariadb --user=root <<SQL
           CREATE USER 'phpunit'@'%' IDENTIFIED BY '$test_db_password';
-          GRANT ALL PRIVILEGES ON \`dbSymfonyType\_test\`.* TO 'phpunit'@'%';
+          GRANT ALL PRIVILEGES ON \`share\_e6\_test\`.* TO 'phpunit'@'%';
           SQL
           echo "APP_SECRET=$test_secret" >> "$GITHUB_ENV"
-          # Doctrine ajoute _test au nom de base, comme sur 4719.
-          echo "DATABASE_URL=mysql://phpunit:$test_db_password@127.0.0.1:3306/dbSymfonyType?charset=utf8mb4" >> "$GITHUB_ENV"
+          # Doctrine ajoute le suffixe _test à share_e6.
+          echo "DATABASE_URL=mysql://phpunit:$test_db_password@127.0.0.1:3306/share_e6?charset=utf8mb4" >> "$GITHUB_ENV"
 
       - name: Installer les versions de composer.lock
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
@@ -79,4 +79,4 @@ jobs:
       - name: Exécuter les tests et vérifier leur indépendance
         run: |
           php bin/phpunit --testdox
-          php bin/phpunit --order-by=random --random-order-seed=4719
+          php bin/phpunit --order-by=random --random-order-seed=5183

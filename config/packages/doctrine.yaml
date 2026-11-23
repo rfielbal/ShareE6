@@ -3,7 +3,7 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
 
         # Version détectée à la connexion. Une version confirmée peut être
-        # renseignée dans DATABASE_URL via serverVersion (voir docs/BASE-DE-DONNEES.md).
+        # renseignée dans DATABASE_URL via serverVersion.
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
@@ -27,8 +27,8 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # Tests séquentiels sur la seule base autorisée dbSymfonyType_test.
-            # DATABASE_URL conserve dbSymfonyType comme nom de base.
+            # Tests séquentiels sur la seule base autorisée share_e6_test.
+            # DATABASE_URL conserve share_e6 comme nom de base.
             dbname_suffix: '_test'
 
 when@prod:

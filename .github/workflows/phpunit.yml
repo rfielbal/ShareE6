@@ -80,3 +80,11 @@ jobs:
         run: |
           php bin/phpunit --testdox
           php bin/phpunit --order-by=random --random-order-seed=5183
+
+      - name: Vérifier que Symfony démarre en production
+        env:
+          APP_ENV: prod
+          APP_DEBUG: '0'
+        run: |
+          export DATABASE_URL="${DATABASE_URL%/*}/share_e6_test?charset=utf8mb4"
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-progress

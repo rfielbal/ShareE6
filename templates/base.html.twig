@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#142d4e">
-    <title>{% block title %}ShareE6{% endblock %}</title>
+    <title>{% block title %}Gestion des accès{% endblock %}</title>
     <link rel="icon" type="image/svg+xml" href="{{ app.request.basePath }}/favicon.svg">
-    <link rel="stylesheet" href="{{ app.request.basePath }}/styles/bootstrap.min.css">
     <link rel="stylesheet" href="{{ app.request.basePath }}/styles/app.css">
 </head>
 <body>
@@ -14,18 +13,16 @@
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 <header class="site-header">
     <div class="header-inner">
-        <a class="brand" href="{{ path('app_home') }}"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>ShareE6<span class="brand-caption">Gestion des fichiers</span></span></a>
+        <a class="brand" href="{{ path('app_home') }}"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Gestion des accès<span class="brand-caption">Espace utilisateurs</span></span></a>
         <nav aria-label="Navigation principale">
             <a href="{{ path('app_home') }}" {% if currentRoute == 'app_home' %}aria-current="page"{% endif %}>Accueil</a>
             {% if app.user %}
-                <a href="{{ path('app_liste_fichiers') }}" {% if currentRoute starts with 'app_liste_fichiers' or currentRoute starts with 'app_ajout_fichier' or currentRoute == 'app_fichiers_par_utilisateur' %}aria-current="page"{% endif %}>Fichiers</a>
-                <a href="{{ path('app_liste_categories') }}" {% if 'categorie' in currentRoute %}aria-current="page"{% endif %}>Catégories</a>
                 <a href="{{ path('app_profile') }}" {% if currentRoute == 'app_profile' %}aria-current="page"{% endif %}>Mon profil</a>
                 {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('admin_users') }}" {% if currentRoute starts with 'admin_' %}aria-current="page"{% endif %}>Administration</a>{% endif %}
-                <a class="nav-action" href="{{ logout_path() }}">Déconnexion</a>
+                <a class="nav-action" href="{{ logout_path() }}">Déconnexion <span aria-hidden="true">↗</span></a>
             {% else %}
                 <a href="{{ path('app_login') }}" {% if currentRoute == 'app_login' %}aria-current="page"{% endif %}>Connexion</a>
-                <a class="nav-action" href="{{ path('app_register') }}" {% if currentRoute == 'app_register' %}aria-current="page"{% endif %}>Créer un compte</a>
+                <a class="nav-action" href="{{ path('app_register') }}" {% if currentRoute == 'app_register' %}aria-current="page"{% endif %}>Créer un compte <span aria-hidden="true">↗</span></a>
             {% endif %}
         </nav>
     </div>
@@ -34,6 +31,6 @@
     {% for label, messages in app.flashes %}{% for message in messages %}<div role="status" class="flash {{ label == 'error' ? 'error' : '' }}">{{ message }}</div>{% endfor %}{% endfor %}
     {% block body %}{% endblock %}
 </main>
-<footer class="site-footer"><span>ShareE6</span><span>Vos fichiers, classés et accessibles.</span></footer>
+<footer class="site-footer"><span>Gestion des accès</span><span>Votre compte, votre espace.</span></footer>
 </body>
 </html>

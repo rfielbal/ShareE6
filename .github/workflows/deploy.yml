@@ -59,6 +59,10 @@ jobs:
 
           git fetch origin main
           git merge-base --is-ancestor "$1" origin/main
+          if ! git cat-file -e "$1:src/Controller/FichierController.php" 2>/dev/null; then
+            echo "Cette version de main ne contient pas la gestion des fichiers. Le serveur conserve la version installée."
+            exit 0
+          fi
           git merge --ff-only "$1"
           test "$(git rev-parse HEAD)" = "$1"
 

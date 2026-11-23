@@ -4,9 +4,6 @@ namespace App\Controller;
 
 use App\Entity\HistoriqueMdp;
 use App\Entity\User;
-use App\Entity\Fichier;
-use App\Form\FichierUserType;
-use App\Repository\ScategorieRepository;
 use App\Form\ChangePasswordType;
 use App\Form\ProfileType;
 use App\Repository\HistoriqueMdpRepository;
@@ -46,7 +43,7 @@ final class ProfileController extends AbstractController
     }
 
     #[Route('/profil', name: 'app_profile', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, HistoriqueMdpRepository $history, UserPasswordHasherInterface $hasher, PasswordHasherFactoryInterface $hasherFactory, ScategorieRepository $scategorieRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, HistoriqueMdpRepository $history, UserPasswordHasherInterface $hasher, PasswordHasherFactoryInterface $hasherFactory): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         /** @var User $user */
@@ -80,17 +77,6 @@ final class ProfileController extends AbstractController
             }
         }
 
-        $scategories = $scategorieRepository->trouverPourClassement();
-        $fichier = (new Fichier())->setUser($user);
-        $fichierForm = $this->createForm(FichierUserType::class, $fichier, [
-            'scategories' => $scategories,
-            'action' => $this->generateUrl('app_ajout_fichier_user'),
-        ]);
-
-        return $this->render('profile/index.html.twig', [
-            'changePasswordForm' => $form,
-            'fichierForm' => $fichierForm->createView(),
-            'scategories' => $scategories,
-        ]);
+        return $this->render('profile/index.html.twig', ['changePasswordForm' => $form]);
     }
 }

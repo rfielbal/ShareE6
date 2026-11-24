@@ -1,4 +1,4 @@
 <form class="inline" method="post" action="{{ path('app_amis_action', {id: ami.id, action: action}) }}">
-    <input type="hidden" name="_token" value="{{ csrf_token('ami-' ~ action ~ '-' ~ ami.id) }}">
-    <button type="submit" class="{{ action == 'supprimer' ? 'danger' : 'secondary' }}">{{ label }}</button>
+	<input type="hidden" name="_token" value="{{ csrf_token('ami-' ~ action ~ '-' ~ ami.id) }}">
+	<button type="submit" class="{{ action == 'supprimer' ? 'danger' : 'secondary' }}">{{ label }}</button>
 </form>

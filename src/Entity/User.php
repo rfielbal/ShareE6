@@ -76,6 +76,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     #[ORM\Column]
     private bool $estActif = true;
 
+    /**
+     * @var Collection<int, Fichier>
+     */
+    #[ORM\OneToMany(targetEntity: Fichier::class, mappedBy: 'user')]
+    private Collection $fichiers;
+
     /** @var Collection<int, self> DemandeAmi : invitations envoyées. */
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'usersDemande')]
     #[ORM\JoinTable(name: 'user_demande')]
@@ -101,6 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     public function __construct()
     {
         $this->dateInscription = new \DateTimeImmutable();
+        $this->fichiers = new ArrayCollection();
         $this->demander = new ArrayCollection();
         $this->usersDemande = new ArrayCollection();
         $this->accepter = new ArrayCollection();
@@ -290,6 +297,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     public function setEstActif(bool $estActif): static
     {
         $this->estActif = $estActif;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fichier>
+     */
+    public function getFichiers(): Collection
+    {
+        return $this->fichiers;
+    }
+
+    public function addFichier(Fichier $fichier): static
+    {
+        if (!$this->fichiers->contains($fichier)) {
+            $this->fichiers->add($fichier);
+            $fichier->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFichier(Fichier $fichier): static
+    {
+        if ($this->fichiers->removeElement($fichier)) {
+            // set the owning side to null (unless already changed)
+            if ($fichier->getUser() === $this) {
+                $fichier->setUser(null);
+            }
+        }
 
         return $this;
     }

@@ -43,6 +43,10 @@ final class TestDatabase
         // Enfants avant parent : les contraintes restent actives.
         // Pas de DROP, de TRUNCATE ni de modification des migrations.
         $this->connection->transactional(function (Connection $connection): void {
+            $connection->executeStatement('DELETE FROM `fichier_scategorie`');
+            $connection->executeStatement('DELETE FROM `fichier`');
+            $connection->executeStatement('DELETE FROM `scategorie`');
+            $connection->executeStatement('DELETE FROM `categorie`');
             $connection->executeStatement('DELETE FROM `historique_connexion`');
             $connection->executeStatement('DELETE FROM `historique_mdp`');
             $connection->executeStatement('DELETE FROM `user`');

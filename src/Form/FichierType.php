@@ -20,12 +20,13 @@ class FichierType extends ClassementFichierType
         $builder
             ->add('fichier', FileType::class, [
                 'label' => 'Fichier à déposer',
+                // Le contrôleur déplace le document sur le disque et renseigne ses métadonnées dans Fichier.
                 'mapped' => false,
                 'attr' => ['accept' => '.pdf,.png,.jpg,.jpeg'],
                 'constraints' => [
                     new NotBlank(message: 'Sélectionnez un fichier.'),
                     new File(
-                        maxSize: '2M',
+                        maxSize: '2M', // 2 000 000 octets, limite incluse.
                         extensions: ['pdf', 'png', 'jpg', 'jpeg'],
                         extensionsMessage: 'Choisissez un fichier PDF, PNG ou JPG dont le contenu correspond à son extension.',
                         maxSizeMessage: 'Le fichier dépasse la limite de 2 Mo.',

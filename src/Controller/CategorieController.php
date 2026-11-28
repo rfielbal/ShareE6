@@ -62,6 +62,7 @@ class CategorieController extends AbstractController
             if (!$this->isCsrfTokenValid($jeton, $request->request->getString('_token'))) {
                 throw $this->createAccessDeniedException();
             }
+            // Supprimer la catégorie supprime aussi ses sous-catégories. Chacune doit donc être vide.
             foreach ($categorie->getScategories() as $scategorie) {
                 if (!$scategorie->getFichiers()->isEmpty()) {
                     $this->addFlash('error', 'Cette catégorie contient des fichiers. Reclassez-les avant de la supprimer.');

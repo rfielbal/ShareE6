@@ -26,6 +26,7 @@ class FichierRepository extends ServiceEntityRepository
             ->orderBy('f.dateEnvoi', 'DESC')
             ->addOrderBy('f.id', 'DESC');
 
+        // Le contrôleur passe null pour afficher à l'administrateur les fichiers de tous les membres.
         if ($user !== null) {
             $qb->andWhere('f.user = :user')->setParameter('user', $user);
         }

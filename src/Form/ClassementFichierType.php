@@ -23,6 +23,7 @@ class ClassementFichierType extends AbstractType
                 'expanded' => true,
                 'multiple' => true,
                 'label' => 'Sous-catégories',
+                // Le formulaire préremplit les cases et le contrôleur applique la sélection au fichier.
                 'mapped' => false,
                 'data' => $builder->getData()->getScategories()->toArray(),
                 'constraints' => [new Count(min: 1, minMessage: 'Choisissez au moins une sous-catégorie.')],

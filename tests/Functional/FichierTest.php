@@ -28,6 +28,7 @@ final class FichierTest extends WebTestCase
         $this->database = new TestDatabase($em->getConnection(), static::$kernel->getEnvironment());
         $this->database->reset();
         $dossier = static::getContainer()->getParameter('file_directory');
+        // Le nettoyage de fin de test doit rester dans le répertoire des dépôts de test.
         self::assertSame(static::getContainer()->getParameter('kernel.project_dir').'/var/test/uploads/fichiers', $dossier);
         $this->dossier = $dossier;
         (new Filesystem())->mkdir($this->dossier);
@@ -93,6 +94,49 @@ final class FichierTest extends WebTestCase
         $this->client->loginUser($this->creerMembre('nolan'));
         $this->client->request('GET', '/fichiers/'.$fichier->getId().'/telecharger');
         self::assertResponseStatusCodeSame(403);
+    }
+
+    #[TestDox('Le propriétaire remplace la sous-catégorie de son fichier')]
+    public function testLeProprietaireReclasseSonFichier(): void
+    {
+        $this->deposerPdf(1_000);
+        $fichier = $this->fichierDepose();
+        $categorie = $fichier->getScategories()->first()->getCategorie();
+        $exercices = (new Scategorie())->setLibelle('Exercices')->setNumero(2)->setCategorie($categorie);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($exercices);
+        $em->flush();
+
+        $page = $this->client->request('GET', '/fichiers/'.$fichier->getId().'/classement');
+        $formulaire = $page->selectButton('Enregistrer le classement')->form();
+        $cases = $formulaire['classement_fichier[scategories]'];
+        $cases[0]->untick(); // Cours, n° 1
+        $cases[1]->tick();   // Exercices, n° 2
+        $this->client->submit($formulaire);
+        self::assertResponseRedirects('/fichiers');
+
+        $this->client->followRedirect();
+        self::assertSelectorCount(1, '.classification-tag');
+        self::assertSelectorTextContains('.classification-tag', 'Informatique / Exercices');
+    }
+
+    #[TestDox('Après confirmation, le fichier est supprimé de la base et du disque')]
+    public function testLeProprietaireSupprimeSonFichier(): void
+    {
+        $this->deposerPdf(1_000);
+        $fichier = $this->fichierDepose();
+        $id = $fichier->getId();
+        $chemin = $this->dossier.'/'.$fichier->getNomServeur();
+
+        $this->client->request('GET', '/fichiers/'.$id.'/supprimer');
+        self::assertFileExists($chemin);
+        $this->client->submitForm('Confirmer la suppression');
+        self::assertResponseRedirects('/fichiers');
+
+        $fichiers = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Fichier::class);
+        self::assertSame(0, $fichiers->count(['id' => $id]));
+        self::assertFileDoesNotExist($chemin);
+        self::assertFileDoesNotExist($chemin.'.suppression');
     }
 
     private function deposerPdf(int $taille): void

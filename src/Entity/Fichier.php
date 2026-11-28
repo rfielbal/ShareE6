@@ -37,6 +37,8 @@ class Fichier
     private ?User $user = null;
 
     /**
+     * Chaque sous-catégorie cochée correspond à un lien dans la table fichier_scategorie.
+     *
      * @var Collection<int, Scategorie>
      */
     #[ORM\ManyToMany(targetEntity: Scategorie::class, inversedBy: 'fichiers')]

@@ -48,6 +48,7 @@ class FichierController extends AbstractController
         $fichier = new Fichier();
         $fichier->setUser($this->getUser());
         $scategories = $repository->trouverPourClassement();
+        // Depuis le profil, même un administrateur dépose pour son propre compte.
         $depotPersonnel = $request->attributes->get('_route') === 'app_ajout_fichier_user';
         $type = $this->isGranted('ROLE_ADMIN') && !$depotPersonnel ? FichierType::class : FichierUserType::class;
         $form = $this->createForm($type, $fichier, ['scategories' => $scategories]);
@@ -58,6 +59,7 @@ class FichierController extends AbstractController
                 $fichier->addScategory($scategorie);
             }
             $file = $form->get('fichier')->getData();
+            // Le suffixe distingue deux dépôts du même nom. Le nom d'origine sert au téléchargement.
             $nom = $slugger->slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))->slice(0, 150);
             $nomServeur = $nom.'-'.uniqid().'.'.$file->guessExtension();
             $fichier->setNomOriginal($file->getClientOriginalName());
@@ -99,6 +101,7 @@ class FichierController extends AbstractController
         $form = $this->createForm(ClassementFichierType::class, $fichier, ['scategories' => $scategories]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // Une sous-catégorie décochée doit disparaître du classement enregistré.
             foreach ($fichier->getScategories()->toArray() as $scategorie) {
                 $fichier->removeScategory($scategorie);
             }
@@ -167,6 +170,7 @@ class FichierController extends AbstractController
         ]);
     }
 
+    /** Le propriétaire et les administrateurs peuvent télécharger, reclasser ou supprimer le fichier. */
     private function verifierAcces(Fichier $fichier): void
     {
         $this->denyAccessUnlessGranted('ROLE_USER');

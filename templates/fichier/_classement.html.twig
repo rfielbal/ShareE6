@@ -2,6 +2,7 @@
     <legend>Classer le fichier</legend>
     <p class="muted">Choisissez une ou plusieurs sous-catégories.</p>
     {{ form_errors(form.scategories) }}
+    {# Les cases suivent l'ordre de trouverPourClassement(). La catégorie sert de titre pour chaque groupe. #}
     {% set categorieId = null %}
     {% for scategorie in scategories %}
         {% if categorieId != scategorie.categorie.id %}

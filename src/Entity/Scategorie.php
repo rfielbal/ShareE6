@@ -26,6 +26,7 @@ class Scategorie
     #[Assert\Length(max: 50, maxMessage: 'Le libellé ne doit pas dépasser {{ limit }} caractères.')]
     private ?string $libelle = null;
 
+    // Le numéro fixe l'ordre d'affichage à l'intérieur de la catégorie.
     #[ORM\Column]
     #[Assert\NotNull(message: 'Saisissez un numéro.')]
     #[Assert\Positive(message: 'Le numéro doit être supérieur à zéro.')]

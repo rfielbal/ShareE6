@@ -20,6 +20,7 @@
             {% if app.user %}
                 <a href="{{ path('app_liste_fichiers') }}" {% if currentRoute starts with 'app_liste_fichiers' or currentRoute starts with 'app_ajout_fichier' or currentRoute == 'app_fichiers_par_utilisateur' %}aria-current="page"{% endif %}>Fichiers</a>
                 <a href="{{ path('app_liste_categories') }}" {% if 'categorie' in currentRoute %}aria-current="page"{% endif %}>Catégories</a>
+                <a href="{{ path('app_amis') }}" {% if currentRoute starts with 'app_amis' %}aria-current="page"{% endif %}>Mes amis</a>
                 <a href="{{ path('app_profile') }}" {% if currentRoute == 'app_profile' %}aria-current="page"{% endif %}>Mon profil</a>
                 {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('admin_users') }}" {% if currentRoute starts with 'admin_' %}aria-current="page"{% endif %}>Administration</a>{% endif %}
                 <a class="nav-action" href="{{ logout_path() }}">Déconnexion</a>

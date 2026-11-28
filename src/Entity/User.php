@@ -82,10 +82,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     #[ORM\OneToMany(targetEntity: Fichier::class, mappedBy: 'user')]
     private Collection $fichiers;
 
+    /** @var Collection<int, self> DemandeAmi : invitations envoyées. */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'usersDemande')]
+    #[ORM\JoinTable(name: 'user_demande')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'demander_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private Collection $demander;
+
+    /** @var Collection<int, self> Invitations reçues. */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'demander')]
+    private Collection $usersDemande;
+
+    /** @var Collection<int, self> AccepterDemande : amis, enregistrés dans les deux sens. */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'userAccepte')]
+    #[ORM\JoinTable(name: 'user_accepter')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'accepter_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private Collection $accepter;
+
+    /** @var Collection<int, self> Côté inverse de la relation d'amitié. */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
+    private Collection $userAccepte;
+
     public function __construct()
     {
         $this->dateInscription = new \DateTimeImmutable();
         $this->fichiers = new ArrayCollection();
+        $this->demander = new ArrayCollection();
+        $this->usersDemande = new ArrayCollection();
+        $this->accepter = new ArrayCollection();
+        $this->userAccepte = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -158,6 +184,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     public function __serialize(): array
     {
         $data = (array) $this;
+        // Ne pas embarquer les comptes amis et leurs mots de passe dans la session.
+        foreach (['demander', 'usersDemande', 'accepter', 'userAccepte'] as $relation) {
+            $data["\0" . self::class . "\0" . $relation] = new ArrayCollection();
+        }
         $data["\0" . self::class . "\0password"] = hash('crc32c', (string) $this->password);
 
         return $data;
@@ -297,6 +327,107 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
                 $fichier->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /** @return Collection<int, self> */
+    public function getDemander(): Collection
+    {
+        return $this->demander;
+    }
+
+    /** @return Collection<int, self> */
+    public function getUsersDemande(): Collection
+    {
+        return $this->usersDemande;
+    }
+
+    /** @return Collection<int, self> */
+    public function getAccepter(): Collection
+    {
+        return $this->accepter;
+    }
+
+    /** @return Collection<int, self> */
+    public function getUserAccepte(): Collection
+    {
+        return $this->userAccepte;
+    }
+
+    public function estAmiAvec(self $user): bool
+    {
+        return $this->accepter->contains($user) || $this->userAccepte->contains($user);
+    }
+
+    public function addDemander(self $destinataire): static
+    {
+        if ($destinataire === $this) {
+            throw new \DomainException('Vous ne pouvez pas vous ajouter vous-même.');
+        }
+        if (!$this->estActif || !$destinataire->estActif) {
+            throw new \DomainException('Ce compte ne peut pas recevoir de demande.');
+        }
+        if ($this->estAmiAvec($destinataire)) {
+            throw new \DomainException('Vous êtes déjà amis.');
+        }
+        if ($this->usersDemande->contains($destinataire)) {
+            throw new \DomainException('Cette personne vous a déjà invité : acceptez sa demande.');
+        }
+        if ($this->demander->contains($destinataire)) {
+            throw new \DomainException('Une demande a déjà été envoyée à cette personne.');
+        }
+        $this->demander->add($destinataire);
+        $destinataire->usersDemande->add($this);
+
+        return $this;
+    }
+
+    public function removeDemander(self $destinataire): static
+    {
+        $this->demander->removeElement($destinataire);
+        $destinataire->usersDemande->removeElement($this);
+
+        return $this;
+    }
+
+    public function removeUsersDemande(self $expediteur): static
+    {
+        $expediteur->removeDemander($this);
+
+        return $this;
+    }
+
+    // Seul le destinataire d'une invitation peut transformer celle-ci en amitié.
+    public function accepterDemande(self $expediteur): static
+    {
+        if (!$this->usersDemande->contains($expediteur)) {
+            throw new \DomainException('Cette demande reçue n’existe plus.');
+        }
+        if (!$this->estActif || !$expediteur->estActif) {
+            throw new \DomainException('Impossible d’accepter la demande d’un compte suspendu.');
+        }
+        $this->removeUsersDemande($expediteur);
+        $this->removeDemander($expediteur);
+        foreach ([[$this, $expediteur], [$expediteur, $this]] as [$user, $ami]) {
+            if (!$user->accepter->contains($ami)) {
+                $user->accepter->add($ami);
+            }
+            if (!$ami->userAccepte->contains($user)) {
+                $ami->userAccepte->add($user);
+            }
+        }
+
+        return $this;
+    }
+
+    public function removeAccepter(self $ami): static
+    {
+        // Une suppression retire l'amitié pour les deux utilisateurs.
+        $this->accepter->removeElement($ami);
+        $this->userAccepte->removeElement($ami);
+        $ami->accepter->removeElement($this);
+        $ami->userAccepte->removeElement($this);
 
         return $this;
     }
